@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Compras - Tripify</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <a href="index.html"><img src="tripifycopia.png" alt="Tripify" class="logo"></a>
+            </div>
+            <a href="index.html" class="btn">Volver al Inicio</a>
+        </div>
+    </div>
+    <div id="print-area" style="display:none;"></div>
+
+    <div class="profile-page-container">
+        <h2>Historial de Compras</h2>
+        <div id="purchase-history-list">
+            <p>No has realizado ninguna compra.</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyA8SxD_5glSOZcIcDeIuQnhXaY5fBmkjW8",
+          authDomain: "tripify-f4a7d.firebaseapp.com",
+          databaseURL: "https://tripify-f4a7d-default-rtdb.firebaseio.com",
+          projectId: "tripify-f4a7d",
+          storageBucket: "tripify-f4a7d.appspot.com",
+          messagingSenderId: "476713525038",
+          appId: "1:476713525038:web:68139009c9e5f194b2a4bf"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (!loggedInUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const historyContainer = document.getElementById('purchase-history-list');
+            
+            try {
+                const userSnapshot = await database.ref('usuarios/' + loggedInUser).once('value');
+                const user = userSnapshot.val();
+                
+                historyContainer.innerHTML = ''; 
+
+                if (user && user.historialDeCompras) {
+                    const formatter = new Intl.NumberFormat('es-AR', {
+                        style: 'currency',
+                        currency: 'ARS',
+                        minimumFractionDigits: 0
+                    });
+
+                    Object.keys(user.historialDeCompras).forEach((purchaseKey, purchaseIndex) => {
+                        const purchase = user.historialDeCompras[purchaseKey];
+                        const purchaseDate = new Date(purchase.fecha).toLocaleDateString('es-AR');
+                        
+                        purchase.items.forEach((item, itemIndex) => {
+                            const ticketId = `ticket-${purchaseIndex}-${itemIndex}`;
+                            const ticketDiv = document.createElement('div');
+                            ticketDiv.className = 'ticket';
+                            ticketDiv.id = ticketId;
+                            ticketDiv.innerHTML = `
+                                <div class="ticket-header">
+                                    <img src="tripifycopia.png" alt="Tripify Logo" class="ticket-logo">
+                                    <h3>Pasaje de Abordaje</h3>
+                                </div>
+                                <div class="ticket-body">
+                                    <div class="ticket-main-content">
+                                        ${item.image ? `<img src="${item.image}" alt="${item.name}" class="ticket-item-image">` : ''}
+                                        <div class="ticket-details">
+                                            <div class="ticket-row">
+                                                <div class="ticket-info">
+                                                    <label>Destino</label>
+                                                    <span>${item.name.replace(/^(Pasaje a|Oferta: Paquete|Paquete)\s*/, '')}</span>
+                                                </div>
+                                                <div class="ticket-info">
+                                                    <label>Pasajero</label>
+                                                    <span>${user.nombreReal}</span>
+                                                </div>
+                                            </div>
+                                            <div class="ticket-row">
+                                                <div class="ticket-info short">
+                                                    <label>Fecha de Compra</label>
+                                                    <span>${purchaseDate}</span>
+                                                </div>
+                                                <div class="ticket-info short">
+                                                    <label>Precio</label>
+                                                    <span>${formatter.format(item.price)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="ticket-footer">
+                                    <button class="download-btn" data-ticket-id="${ticketId}"><i class="fas fa-download"></i> Descargar</button>
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                            `;
+                            historyContainer.appendChild(ticketDiv);
+                        });
+                    });
+
+                    document.querySelectorAll('.download-btn').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            const ticketId = e.currentTarget.dataset.ticketId;
+                            const ticketElement = document.getElementById(ticketId).cloneNode(true);
+                            
+                            const footer = ticketElement.querySelector('.ticket-footer');
+                            if(footer) footer.remove();
+
+                            ticketElement.style.margin = '20px';
+                            ticketElement.style.boxShadow = 'none';
+
+                            const opt = {
+                              margin:       1,
+                              filename:     `Tripify-Ticket-${ticketId}.pdf`,
+                              image:        { type: 'jpeg', quality: 0.98 },
+                              html2canvas:  { scale: 2, useCORS: true },
+                              jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+                            };
+
+                            html2pdf().from(ticketElement).set(opt).save();
+
+                        });
+                    });
+
+                } else {
+                    historyContainer.innerHTML = '<p>No has realizado ninguna compra.</p>';
+                }
+            } catch(error) {
+                console.error("Error fetching history:", error);
+                historyContainer.innerHTML = '<p>Ocurrió un error al cargar el historial.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

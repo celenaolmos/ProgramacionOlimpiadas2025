@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación - Tripify</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                 <a href="index.html"><img src="tripifycopia.png" alt="Tripify" class="logo"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="confirmation-container">
+        <div class="confirmation-box">
+            <h2>¡Compra Exitosa!</h2>
+            <p>Muchas gracias por su compra. Puede ver y descargar sus tickets en el <a href="historial-compras.html" style="color: #82eefd; text-decoration: underline;">Historial de Compras</a>. También hemos enviado un recibo al email y teléfono proporcionados.</p>
+            <a href="index.html" class="btn">Inicio</a>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyA8SxD_5glSOZcIcDeIuQnhXaY5fBmkjW8",
+          authDomain: "tripify-f4a7d.firebaseapp.com",
+          databaseURL: "https://tripify-f4a7d-default-rtdb.firebaseio.com",
+          projectId: "tripify-f4a7d",
+          storageBucket: "tripify-f4a7d.appspot.com",
+          messagingSenderId: "476713525038",
+          appId: "1:476713525038:web:68139009c9e5f194b2a4bf"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            const cartItems = JSON.parse(sessionStorage.getItem('cartItems')) || [];
+
+            if (loggedInUser && cartItems.length > 0) {
+                const userRef = database.ref('usuarios/' + loggedInUser);
+                const newPurchase = {
+                    fecha: new Date().toISOString(),
+                    items: cartItems,
+                    total: cartItems.reduce((sum, item) => sum + item.price, 0)
+                };
+                
+                // Push to create a new unique record in the purchase history list
+                userRef.child('historialDeCompras').push(newPurchase)
+                    .then(() => {
+                        // Clear the cart from session storage after successful purchase
+                        sessionStorage.removeItem('cartItems');
+                    })
+                    .catch(error => console.error("Could not save purchase:", error));
+            }
+        });
+    </script>
+</body>
+</html>

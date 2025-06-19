@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil - Tripify</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <a href="index.html"><img src="tripifycopia.png" alt="Tripify" class="logo"></a>
+            </div>
+            <a href="index.html" class="btn">Volver al Inicio</a>
+        </div>
+    </div>
+
+    <div class="profile-page-container">
+        <h2>Editar Perfil</h2>
+        <form id="edit-profile-form" class="profile-form">
+            <div class="form-group">
+                <label for="edit-realname">Nombre Real</label>
+                <input type="text" id="edit-realname" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-username">Nombre de Usuario (no se puede cambiar)</label>
+                <input type="text" id="edit-username" disabled>
+            </div>
+            <div class="form-group">
+                <label for="edit-password">Nueva Contraseña (dejar en blanco para no cambiar)</label>
+                <input type="password" id="edit-password">
+            </div>
+            <div class="form-group">
+                <label for="confirm-edit-password">Confirmar Nueva Contraseña</label>
+                <input type="password" id="confirm-edit-password">
+            </div>
+            <button type="submit" class="btn">Guardar Cambios</button>
+        </form>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyA8SxD_5glSOZcIcDeIuQnhXaY5fBmkjW8",
+          authDomain: "tripify-f4a7d.firebaseapp.com",
+          databaseURL: "https://tripify-f4a7d-default-rtdb.firebaseio.com",
+          projectId: "tripify-f4a7d",
+          storageBucket: "tripify-f4a7d.appspot.com",
+          messagingSenderId: "476713525038",
+          appId: "1:476713525038:web:68139009c9e5f194b2a4bf"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (!loggedInUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const userRef = database.ref('usuarios/' + loggedInUser);
+            const form = document.getElementById('edit-profile-form');
+            const realNameInput = document.getElementById('edit-realname');
+            const usernameInput = document.getElementById('edit-username');
+            const passwordInput = document.getElementById('edit-password');
+            const confirmPasswordInput = document.getElementById('confirm-edit-password');
+
+            try {
+                const snapshot = await userRef.once('value');
+                const user = snapshot.val();
+                if (user) {
+                    realNameInput.value = user.nombreReal;
+                    usernameInput.value = user.nombreUsuario;
+                }
+            } catch(error) {
+                console.error("Error fetching profile", error);
+            }
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const newPassword = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+
+                if (newPassword && newPassword !== confirmPassword) {
+                    alert('Las nuevas contraseñas no coinciden.');
+                    return;
+                }
+
+                const updates = {};
+                updates['nombreReal'] = realNameInput.value;
+                if (newPassword) {
+                    updates['contrasena'] = newPassword;
+                }
+
+                userRef.update(updates)
+                    .then(() => {
+                        alert('Perfil actualizado con éxito.');
+                        passwordInput.value = '';
+                        confirmPasswordInput.value = '';
+                    })
+                    .catch(error => {
+                        console.error("Error updating profile: ", error);
+                        alert("No se pudo actualizar el perfil.");
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Tripify</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="auth-overlay">
+        <div class="auth-box">
+            <h2>Crear Cuenta</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-username">Nombre de Usuario</label>
+                    <input type="text" id="register-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-realname">Nombre Real</label>
+                    <input type="text" id="register-realname" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Contraseña</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirmar Contraseña</label>
+                    <input type="password" id="register-confirm-password" required>
+                </div>
+                <button type="submit" class="btn">Registrarse</button>
+            </form>
+            <p class="auth-switch">¿Ya tienes una cuenta? <a href="index.html">Inicia sesión</a></p>
+        </div>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyA8SxD_5glSOZcIcDeIuQnhXaY5fBmkjW8",
+          authDomain: "tripify-f4a7d.firebaseapp.com",
+          databaseURL: "https://tripify-f4a7d-default-rtdb.firebaseio.com",
+          projectId: "tripify-f4a7d",
+          storageBucket: "tripify-f4a7d.appspot.com",
+          messagingSenderId: "476713525038",
+          appId: "1:476713525038:web:68139009c9e5f194b2a4bf"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('register-username').value;
+            const realName = document.getElementById('register-realname').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden.');
+                return;
+            }
+
+            try {
+                // Check if username already exists
+                const snapshot = await database.ref('usuarios/' + username).once('value');
+                if (snapshot.exists()) {
+                    alert('El nombre de usuario ya está en uso.');
+                    return;
+                }
+
+                // Add new user
+                const newUser = {
+                    nombreUsuario: username,
+                    nombreReal: realName,
+                    contrasena: password,
+                    metodosDePago: [],
+                    historialDeCompras: []
+                };
+
+                await database.ref('usuarios/' + username).set(newUser);
+
+                alert('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error("Error creating account:", error);
+                alert("Ocurrió un error al crear la cuenta.");
+            }
+        });
+    </script>
+
+</body>
+</html>

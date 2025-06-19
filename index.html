@@ -1,0 +1,1231 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripify</title>
+    <link rel="icon" href="Diseño sin título (3).png" type="image/x-icon"> 
+    <script type="importmap">
+    {
+      "imports": {
+        "@xenova/transformers": "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1"
+      }
+    }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+</head>
+
+<body>
+
+    <div id="login-overlay" class="auth-overlay">
+        <div class="auth-box">
+            <h2>Iniciar Sesión</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Nombre de Usuario</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn">Ingresar</button>
+            </form>
+            <p class="auth-switch">¿No tienes una cuenta? <a href="register.html">Regístrate</a></p>
+        </div>
+    </div>
+
+    <div id="main-content" style="display: none;">
+        <div class="navbar">
+            <div class="navbar-container">
+                <div class="logo">
+                    <img src="tripifycopia.png" alt="Tripify" class="logo">
+                </div>
+                <div class="menu">
+                    <ul class="list">
+                        <li class="item">Destinos</li>
+                        <li class="item">Ofertas</li>
+                        <li class="item">Paquetes</li>
+                        <li class="item">Contacto</li>
+                    </ul>
+                </div>
+                <div class="profile-and-cart">
+                    <div class="profile-menu">
+                        <div id="profile-trigger" class="profile-trigger">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="username-display"></span>
+                            <i class="fas fa-chevron-down profile-arrow"></i>
+                        </div>
+                        <div id="profile-dropdown" class="profile-dropdown">
+                            <div class="profile-info">
+                                <span id="profile-realname" class="profile-realname"></span>
+                                <span id="profile-username-in-dropdown" class="profile-username-in-dropdown"></span>
+                            </div>
+                            <ul class="profile-options">
+                                <li><a href="metodos-pago.html"><i class="fas fa-credit-card"></i> Métodos de Pago</a></li>
+                                <li><a href="editar-perfil.html"><i class="fas fa-user-edit"></i> Editar Perfil</a></li>
+                                <li><a href="historial-compras.html"><i class="fas fa-history"></i> Historial de Compras</a></li>
+                            </ul>
+                            <button id="logout-btn" class="btn-logout">Salir</button>
+                        </div>
+                    </div>
+                    <div class="cart-container">
+                        <img class="cart-icon" id="cart-icon" src="cart-icon.png">
+                        <span id="cart-count">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="cart-panel" class="cart-panel">
+            <span class="close-cart-btn">&times;</span>
+            <h3>Carrito de Compras</h3>
+            <ul id="cart-items"></ul>
+            <div id="cart-total">Total: $0.00</div>
+            <button class="checkout-btn">
+                <a href="pago.html">Pagar</a>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="background">
+            <div class="featured" id="home">
+                <div class="featured-content">
+                    <h1 class="featured-title">Tu Aventura Comienza Aquí</h1>
+                    <p class="desc">Explora los destinos más increíbles del mundo. ¿Lo seguís pensando? Viajá seguro/a con nosotros.</p>
+                    <button class="btn info-btn" data-title="Sobre Tripify" data-description="En Tripify, nos dedicamos a crear experiencias de viaje inolvidables. Ofrecemos paquetes personalizados, vuelos y hoteles a los mejores precios. Nuestra misión es hacer que tu viaje soñado se haga realidad de una manera fácil, segura y accesible. ¡Contactanos para más información!" data-image="featured-background.png">Información</button>
+                </div>
+            </div>
+            
+            <div class="video-container">
+                <video id="video" autoplay playsinline style="display: none;"></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+            </div>
+
+            <div class="list-container" id="destinos">
+                <h1 class="list-title">DESTINOS POPULARES</h1>
+                <div class="list-wrapper">
+                    <div class="item-list">
+                        <div class="item-card">
+                            <img src="acapulco mexico.png" alt="Acapulco, México" class="item-img">
+                            <h3 class="item-title">Acapulco, México</h3>
+                            <p class="item-desc">Disfruta del sol y las playas doradas de la costa del Pacífico.</p>
+                            <p class="item-price">$1.850.000</p>
+                            <div class="item-btn-group">
+                                <button class="item-btn info-btn" data-title="Acapulco, México" data-description="Un destino clásico que nunca pasa de moda. Famoso por su vibrante vida nocturna, sus playas de arena dorada y los clavadistas de La Quebrada. ¡Una escapada perfecta para el sol y la diversión!" data-image="acapulco mexico.png">Info</button>
+                                <button class="item-btn add-to-cart-btn" data-name="Pasaje a Acapulco" data-price="1850000" data-image="acapulco mexico.png">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="item-card">
+                            <img src="andorra.png" alt="Andorra" class="item-img">
+                            <h3 class="item-title">Andorra la Vella</h3>
+                            <p class="item-desc">Un paraíso para las compras y los deportes de invierno en los Pirineos.</p>
+                            <p class="item-price">$2.200.000</p>
+                            <div class="item-btn-group">
+                                <button class="item-btn info-btn" data-title="Andorra la Vella" data-description="Situada en el corazón de los Pirineos, Andorra ofrece estaciones de esquí de primer nivel, naturaleza impresionante y un famoso centro comercial libre de impuestos. ¡Ideal para aventureros y compradores por igual!" data-image="andorra.png">Info</button>
+                                <button class="item-btn add-to-cart-btn" data-name="Pasaje a Andorra" data-price="2200000" data-image="andorra.png">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="item-card">
+                            <img src="australia.png" alt="Sydney, Australia" class="item-img">
+                            <h3 class="item-title">Sydney, Australia</h3>
+                            <p class="item-desc">Descubre la icónica Opera House y la vibrante vida de la ciudad.</p>
+                            <p class="item-price">$4.500.000</p>
+                            <div class="item-btn-group">
+                                <button class="item-btn info-btn" data-title="Sydney, Australia" data-description="Explora la ciudad más grande de Australia. Navega por su famoso puerto, relájate en Bondi Beach y admira la arquitectura única de la Ópera de Sydney. ¡Una metrópolis cosmopolita y llena de energía!" data-image="australia.png">Info</button>
+                                <button class="item-btn add-to-cart-btn" data-name="Pasaje a Sydney" data-price="4500000" data-image="australia.png">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="item-card">
+                            <img src="bariloche.png" alt="Bariloche, Argentina" class="item-img">
+                            <h3 class="item-title">Bariloche, Argentina</h3>
+                            <p class="item-desc">Nieve, lagos y chocolate en el corazón de la Patagonia.</p>
+                            <p class="item-price">$185.000</p>
+                             <div class="item-btn-group">
+                                <button class="item-btn info-btn" data-title="Bariloche, Argentina" data-description="San Carlos de Bariloche es la puerta de entrada a la Patagonia. Disfruta de sus paisajes alpinos, el esquí en el Cerro Catedral, sus lagos de aguas cristalinas y el delicioso chocolate artesanal." data-image="bariloche.png">Info</button>
+                                <button class="item-btn add-to-cart-btn" data-name="Pasaje a Bariloche" data-price="185000" data-image="bariloche.png">Agregar</button>
+                            </div>
+                        </div>
+                         <div class="item-card">
+                            <img src="brasil.png" alt="Río de Janeiro, Brasil" class="item-img">
+                            <h3 class="item-title">Río de Janeiro, Brasil</h3>
+                            <p class="item-desc">Siente el ritmo de la samba y admira el Cristo Redentor.</p>
+                            <p class="item-price">$950.000</p>
+                            <div class="item-btn-group">
+                                <button class="item-btn info-btn" data-title="Río de Janeiro, Brasil" data-description="La 'Cidade Maravilhosa' te espera con los brazos abiertos. Sube al Pan de Azúcar, relájate en las playas de Copacabana e Ipanema y déjate maravillar por la majestuosidad del Cristo Redentor." data-image="brasil.png">Info</button>
+                                <button class="item-btn add-to-cart-btn" data-name="Pasaje a Río de Janeiro" data-price="950000" data-image="brasil.png">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="item-card">
+                            <img src="carlos paz.png" alt="Villa Carlos Paz, Argentina" class="item-img">
+                            <h3 class="item-title">Carlos Paz, Argentina</h3>
+                            <p class="item-desc">Disfruta de los teatros, el lago y las sierras cordobesas.</p>
+                            <p class="item-price">$115.000</p>
+                            <div class="item-btn-group">
+                                <button class="item-btn info-btn" data-title="Carlos Paz, Argentina" data-description="El principal centro turístico de la provincia de Córdoba. Famoso por su temporada teatral de verano, el lago San Roque y el icónico Reloj Cucú. Un lugar ideal para la familia y el entretenimiento." data-image="carlos paz.png">Info</button>
+                                <button class="item-btn add-to-cart-btn" data-name="Pasaje a Carlos Paz" data-price="115000" data-image="carlos paz.png">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="item-card">
+                            <img src="japon.png" alt="Tokyo, Japón" class="item-img">
+                            <h3 class="item-title">Tokyo, Japón</h3>
+                            <p class="item-desc">La megaciudad que combina tradición milenaria y futuro.</p>
+                            <p class="item-price">$2.950.000</p>
+                            <div class="item-btn-group">
+                                <button class="item-btn info-btn" data-title="Tokyo, Japón" data-description="Sumérgete en una cultura fascinante. Desde los templos antiguos de Asakusa hasta el cruce de Shibuya y los rascacielos de Shinjuku, Tokyo es una experiencia inolvidable que te sorprenderá a cada paso." data-image="japon.png">Info</button>
+                                <button class="item-btn add-to-cart-btn" data-name="Pasaje a Tokyo" data-price="2950000" data-image="japon.png">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="item-card">
+                            <img src="region xi chile.png" alt="Carretera Austral, Chile" class="item-img">
+                            <h3 class="item-title">Carretera Austral, Chile</h3>
+                            <p class="item-desc">Aventura en la Patagonia chilena, paisajes que quitan el aliento.</p>
+                            <p class="item-price">$820.000</p>
+                             <div class="item-btn-group">
+                                <button class="item-btn info-btn" data-title="Carretera Austral, Chile" data-description="Para los amantes de la naturaleza y la aventura. Recorre una de las rutas más escénicas del mundo, explorando glaciares, fiordos y bosques vírgenes en la indómita Patagonia chilena." data-image="region xi chile.png">Info</button>
+                                <button class="item-btn add-to-cart-btn" data-name="Pasaje a Carretera Austral" data-price="820000" data-image="region xi chile.png">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list-container" id="ofertas">
+                <h1 class="list-title">OFERTAS IMPERDIBLES</h1>
+                <div class="splide" id="ofertas-carousel" aria-label="Ofertas Imperdibles">
+                    <div class="splide__track">
+                        <ul class="splide__list">
+                            <li class="splide__slide">
+                                <div class="item-card oferta-card">
+                                    <img src="1.png" alt="Andorra" class="item-img">
+                                    <div class="item-btn-group">
+                                        <button class="item-btn add-to-cart-btn" data-name="Oferta: Paquete Andorra" data-price="285000" data-image="1.png">Agregar</button>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="splide__slide">
+                                <div class="item-card oferta-card">
+                                    <img src="2.png" alt="Australia" class="item-img">
+                                    <div class="item-btn-group">
+                                        <button class="item-btn add-to-cart-btn" data-name="Oferta: Paquete Australia" data-price="450000" data-image="2.png">Agregar</button>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="splide__slide">
+                                <div class="item-card oferta-card">
+                                    <img src="3.png" alt="Bariloche, Argentina" class="item-img">
+                                    <div class="item-btn-group">
+                                        <button class="item-btn add-to-cart-btn" data-name="Oferta: Paquete Bariloche" data-price="185000" data-image="3.png">Agregar</button>
+                                    </div>
+                                </div>
+                            </li>
+                             <li class="splide__slide">
+                                <div class="item-card oferta-card">
+                                    <img src="4.png" alt="Brasil" class="item-img">
+                                    <div class="item-btn-group">
+                                        <button class="item-btn add-to-cart-btn" data-name="Oferta: Paquete Brasil" data-price="265000" data-image="4.png">Agregar</button>
+                                    </div>
+                                </div>
+                            </li>
+                             <li class="splide__slide">
+                                <div class="item-card oferta-card">
+                                    <img src="5.png" alt="Villa Carlos Paz, Argentina" class="item-img">
+                                    <div class="item-btn-group">
+                                        <button class="item-btn add-to-cart-btn" data-name="Oferta: Paquete Carlos Paz" data-price="115000" data-image="5.png">Agregar</button>
+                                    </div>
+                                </div>
+                            </li>
+                             <li class="splide__slide">
+                                <div class="item-card oferta-card">
+                                    <img src="6.png" alt="Chile" class="item-img">
+                                     <div class="item-btn-group">
+                                        <button class="item-btn add-to-cart-btn" data-name="Oferta: Paquete Chile" data-price="820000" data-image="6.png">Agregar</button>
+                                    </div>
+                                </div>
+                            </li>
+                             <li class="splide__slide">
+                                <div class="item-card oferta-card">
+                                    <img src="7.png" alt="Japón" class="item-img">
+                                    <div class="item-btn-group">
+                                        <button class="item-btn add-to-cart-btn" data-name="Oferta: Paquete Japón" data-price="295000" data-image="7.png">Agregar</button>
+                                    </div>
+                                </div>
+                            </li>
+                             <li class="splide__slide">
+                                <div class="item-card oferta-card">
+                                    <img src="8.png" alt="México" class="item-img">
+                                    <div class="item-btn-group">
+                                        <button class="item-btn add-to-cart-btn" data-name="Oferta: Paquete México" data-price="225000" data-image="8.png">Agregar</button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="featured" id="contacto" style="background:linear-gradient(to bottom,rgba(0, 0, 0, 0.4),#1d2a36), url('contact-background.png');">
+                <div class="featured-content">
+                    <h1 class="featured-title">Contáctanos</h1>
+                    <p class="desc">¿Tenés preguntas o querés un paquete a medida? Escribinos.</p>
+                    <form class="contact-form">
+                        <input type="text" placeholder="Tu Nombre">
+                        <input type="email" placeholder="Tu Email">
+                        <textarea placeholder="Tu Mensaje"></textarea>
+                        <button class="btn" type="submit">Enviar</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="list-container" id="paquetes">
+                 <h1 class="list-title">PAQUETES TODO INCLUIDO</h1>
+                <div class="list-wrapper centered-wrapper">
+                    <div class="splide" id="paquetes-carousel" aria-label="Paquetes Todo Incluido">
+                        <div class="splide__track">
+                            <ul class="splide__list">
+                                <li class="splide__slide">
+                                    <div class="item-card oferta-card paquete-card">
+                                        <img src="9.png" alt="Cancún, México" class="item-img">
+                                        <h3 class="item-title-overlay">Paquete Cancún All-Inclusive</h3>
+                                        <div class="item-btn-group">
+                                            <button class="item-btn info-btn" data-title="Paquete Cancún Todo Incluido" data-description="¡Todo resuelto! Disfruta de 7 días y 6 noches en Cancún con aéreos, resort all-inclusive, traslados desde y hacia el aeropuerto, seguro de viaje y una excursión a la maravilla del mundo: Chichén Itzá. Salidas en Enero y Julio." data-image="9.png">Info</button>
+                                            <button class="item-btn add-to-cart-btn" data-name="Paquete Cancún All-Inclusive" data-price="3800000" data-image="9.png">Agregar</button>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div id="info-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <h2 id="modal-title"></h2>
+    <img id="modal-image" src="" alt="Destination Image">
+    <p id="modal-description"></p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script type="module">
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA8SxD_5glSOZcIcDeIuQnhXaY5fBmkjW8",
+  authDomain: "tripify-f4a7d.firebaseapp.com",
+  databaseURL: "https://tripify-f4a7d-default-rtdb.firebaseio.com",
+  projectId: "tripify-f4a7d",
+  storageBucket: "tripify-f4a7d.appspot.com",
+  messagingSenderId: "476713525038",
+  appId: "1:476713525038:web:68139009c9e5f194b2a4bf"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+const initialize = async () => {
+
+};
+
+// Start the initialization process
+initialize();
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Login/Auth Elements ---
+    const loginOverlay = document.getElementById('login-overlay');
+    const mainContent = document.getElementById('main-content');
+    const loginForm = document.getElementById('login-form');
+    const logoutBtn = document.getElementById('logout-btn');
+    const usernameDisplay = document.getElementById('username-display');
+    const profileTrigger = document.getElementById('profile-trigger');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const profileRealName = document.getElementById('profile-realname');
+    const profileUsernameInDropdown = document.getElementById('profile-username-in-dropdown');
+
+
+    // --- Auth Functions ---
+    const checkLogin = async () => {
+        const loggedInUser = sessionStorage.getItem('loggedInUser');
+        if (loggedInUser) {
+            loginOverlay.style.display = 'none';
+            mainContent.style.display = 'block';
+            usernameDisplay.textContent = loggedInUser;
+            
+            try {
+                const snapshot = await database.ref('usuarios/' + loggedInUser).once('value');
+                const user = snapshot.val();
+                if(user) {
+                    profileRealName.textContent = user.nombreReal;
+                    profileUsernameInDropdown.textContent = `@${user.nombreUsuario}`;
+                }
+            } catch(error) {
+                console.error("Error fetching user data from Firebase:", error);
+            }
+        } else {
+            loginOverlay.style.display = 'flex';
+            mainContent.style.display = 'none';
+        }
+    };
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        
+        try {
+            const snapshot = await database.ref('usuarios/' + username).once('value');
+            const user = snapshot.val();
+
+            if (user && user.contrasena === password) {
+                sessionStorage.setItem('loggedInUser', user.nombreUsuario);
+                checkLogin();
+            } else {
+                alert('Nombre de usuario o contraseña incorrectos.');
+            }
+        } catch (error) {
+            console.error("Error during login:", error);
+            alert('Ocurrió un error al intentar iniciar sesión.');
+        }
+    };
+
+    const handleLogout = () => {
+        sessionStorage.removeItem('loggedInUser');
+        sessionStorage.removeItem('cartItems'); // Clear cart on logout
+        cartItems = [];
+        updateCart();
+        checkLogin();
+    };
+
+    // --- State ---
+    let cartItems = JSON.parse(sessionStorage.getItem('cartItems')) || [];
+
+    // --- DOM Elements ---
+    const cartIcon = document.getElementById('cart-icon');
+    const cartPanel = document.getElementById('cart-panel');
+    const cartItemsList = document.getElementById('cart-items');
+    const cartCount = document.getElementById('cart-count');
+    const cartTotal = document.getElementById('cart-total');
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+    const infoButtons = document.querySelectorAll('.info-btn');
+    
+    // All modals
+    const modals = document.querySelectorAll('.modal');
+    // Main info modal
+    const infoModal = document.getElementById('info-modal');
+    const infoModalCloseButton = infoModal.querySelector('.close-button');
+
+    const navLinks = document.querySelectorAll('.navbar .item');
+    const contactForm = document.querySelector('.contact-form');
+    const checkoutButton = cartPanel.querySelector('.checkout-btn');
+    const cartCloseButton = document.querySelector('.close-cart-btn');
+
+    // --- Profile Elements ---
+    const profileMenu = document.querySelector('.profile-menu');
+
+
+    // --- Carousel ---
+    if (document.getElementById('ofertas-carousel')) {
+        new Splide('#ofertas-carousel', {
+            type       : 'loop',
+            perPage    : 4,
+            perMove    : 1,
+            autoplay   : true,
+            interval   : 3000,
+            pauseOnHover: true,
+            gap        : '30px',
+            pagination : false,
+            arrows     : true,
+            breakpoints: {
+                1200: { perPage: 3 },
+                992: { perPage: 2 },
+                768: { perPage: 1 },
+            },
+        }).mount();
+    }
+
+    if (document.getElementById('paquetes-carousel')) {
+        new Splide('#paquetes-carousel', {
+            type       : 'loop',
+            perPage    : 1,
+            autoplay   : true,
+            interval   : 5000,
+            pauseOnHover: true,
+            pagination : false,
+            arrows     : false,
+        }).mount();
+    }
+
+
+    // --- Cart Functions ---
+
+    const updateCart = () => {
+        // Clear current display
+        cartItemsList.innerHTML = '';
+        
+        let total = 0;
+        
+        const formatter = new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS',
+            minimumFractionDigits: 0
+        });
+
+        // Populate list
+        cartItems.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.classList.add('cart-item');
+            li.innerHTML = `
+                <div class="item-info">
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-price">${formatter.format(item.price)}</span>
+                </div>
+                <button class="remove-btn" data-index="${index}"><i class="fas fa-times"></i></button>
+            `;
+            cartItemsList.appendChild(li);
+            total += item.price;
+        });
+
+    
+        cartCount.textContent = cartItems.length;
+        cartTotal.textContent = `Total: ${formatter.format(total)}`;
+        
+    
+        document.querySelectorAll('.remove-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const index = e.currentTarget.getAttribute('data-index');
+                removeFromCart(index);
+            });
+        });
+    };
+
+    const addToCart = (name, price, image) => {
+        cartItems.push({ name, price, image });
+        updateCart();
+    };
+
+    const removeFromCart = (index) => {
+        cartItems.splice(index, 1);
+        updateCart();
+    };
+
+    const toggleCartPanel = () => {
+        cartPanel.classList.toggle('open');
+    };
+    
+
+    const cartPanelCloseButton = cartPanel.querySelector('button:last-of-type');
+    if (cartPanelCloseButton) {
+        cartPanelCloseButton.addEventListener('click', toggleCartPanel);
+    }
+
+
+
+    const openModal = (modalElement) => {
+        if (modalElement) {
+            modalElement.style.display = 'block';
+        }
+    };
+    
+    const openInfoModal = (title, description, imageSrc) => {
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-description').textContent = description;
+        const modalImage = document.getElementById('modal-image');
+        if (imageSrc && imageSrc !== "") {
+            modalImage.src = imageSrc;
+            modalImage.style.display = 'block';
+        } else {
+            modalImage.style.display = 'none';
+        }
+        openModal(infoModal);
+    };
+
+    const closeModal = (modalElement) => {
+        if(modalElement) {
+            modalElement.style.display = 'none';
+        }
+    };
+    
+    const closeAllModals = () => {
+        modals.forEach(modal => closeModal(modal));
+    };
+
+
+    // --- Navigation Functions ---
+    const scrollToSection = (id) => {
+        const section = document.getElementById(id);
+        if (section) {
+            section.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    };
+
+
+
+
+    // Initial calls
+    checkLogin();
+    updateCart();
+
+    // --- Event Listeners ---
+    
+    // Auth
+    loginForm.addEventListener('submit', handleLogin);
+    logoutBtn.addEventListener('click', handleLogout);
+
+    // Profile Dropdown
+    profileTrigger.addEventListener('click', () => {
+        profileDropdown.classList.toggle('active');
+        document.querySelector('.profile-arrow').classList.toggle('up');
+    });
+
+    // Close dropdown if clicking outside
+    window.addEventListener('click', (e) => {
+        if (!profileMenu.contains(e.target)) {
+            profileDropdown.classList.remove('active');
+            document.querySelector('.profile-arrow').classList.remove('up');
+        }
+    });
+
+
+    // añadir AL CARRO
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const name = e.target.dataset.name;
+            const price = parseFloat(e.target.dataset.price);
+            const image = e.target.dataset.image;
+            addToCart(name, price, image);
+            sessionStorage.setItem('cartItems', JSON.stringify(cartItems)); // Save cart to session
+            if (!cartPanel.classList.contains('open')) {
+                toggleCartPanel();
+            }
+        });
+    });
+   
+    cartIcon.addEventListener('click', toggleCartPanel);
+
+  
+    if (cartCloseButton) {
+        cartCloseButton.addEventListener('click', toggleCartPanel);
+    }
+
+    // Modal
+    infoButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const { title, description, image } = e.currentTarget.dataset;
+            openInfoModal(title, description, image);
+        });
+    });
+
+    // Close buttons for all modals
+    document.querySelectorAll('.close-button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            closeModal(e.target.closest('.modal'));
+        });
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+            closeModal(e.target);
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const sectionId = e.target.textContent.toLowerCase().trim();
+             const targetId = {
+                'destinos': 'destinos',
+                'ofertas': 'ofertas',
+                'paquetes': 'paquetes',
+                'contacto': 'contacto'
+            }[sectionId];
+
+            if (targetId) {
+                scrollToSection(targetId);
+            }
+        });
+    });
+
+    // formulario
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('¡Mensaje enviado! Gracias por contactarnos');
+            contactForm.reset();
+        });
+    }
+    
+});
+</script>
+
+</body>
+<style>
+  
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #1e2530; 
+  color: #ecf0f1; 
+  font-family: 'Sen', sans-serif;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.navbar {
+  width: 100%;
+  height: 60px;
+  background-color: #1d2a36;
+  padding: 0 50px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  border-bottom: 1px solid #354250;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.logo .lg {
+  font-size: 30px;
+  color: #7D3C98;
+}
+
+.menu .list {
+  display: flex;
+  list-style: none;
+}
+
+.menu .item {
+  margin: 0 20px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.menu .item:hover {
+    color: #28333d;
+}
+
+.cart-icon {
+  color: white;
+  padding: 2px 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  z-index: 100;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  width: 35px;
+}
+
+.cart-icon .fas {
+    margin-right: 2px;
+}
+
+
+.container {
+  background-color: #1d2a36;
+  padding-top: 60px; 
+}
+
+
+.featured {
+  
+  min-height: 60vh;
+  padding: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+}
+
+.featured-content {
+    background: rgba(29, 42, 54, 0.6);
+    padding: 30px 40px;
+    border-radius: 15px;
+    max-width: 700px;
+}
+
+.featured-title {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.desc {
+  width: 100%;
+  color: lightgray;
+  margin: 20px 0;
+  font-size: 1.1rem;
+}
+
+.btn {
+  background-color: #8899b9;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #28333d;
+}
+
+
+
+
+.list-container {
+  padding: 40px 50px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.list-title {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+
+    padding-left: 15px;
+}
+
+.list-wrapper .item-list {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+
+.item-card {
+  background-color: #354250;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 280px;
+/*box-shadow para las sombras */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.item-card:hover {
+  transform: translateY(-10px);
+/*box shadow para las sombras */
+}
+
+.item-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.item-card .item-title {
+  font-size: 1.3rem;
+  margin: 15px;
+  color: #fff;
+}
+
+.item-card .item-desc {
+  font-size: 0.9rem;
+  margin: 0 15px 15px;
+  flex-grow: 1;
+  color: #bdc3c7;
+}
+
+.item-card .item-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0 15px 15px;
+    color: #82eefd;
+}
+
+.item-price .original-price {
+    text-decoration: line-through;
+    color: #95a5a6;
+    font-size: 0.9rem;
+    margin-right: 10px;
+}
+
+.item-btn-group {
+    display: flex;
+    gap: 10px;
+    padding: 0 15px 15px;
+}
+
+.item-card .item-btn {
+  flex: 1;
+  padding: 10px 5px;
+  background-color: #8899b9;
+  color: white;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.item-card .item-btn:hover {
+    background-color: #28333d;
+}
+
+.item-card .info-btn {
+    background-color: #566573;
+}
+.item-card .info-btn:hover {
+    background-color: #28333d;
+}
+
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #34495e;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    font-size: 1rem;
+}
+
+.contact-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+
+.cart-panel {
+  position: fixed;
+  top: 0;
+  right: -350px;
+  width: 350px;
+  height: 100%;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  z-index: 1000;
+  overflow-y: auto;
+  transition: right 0.4s ease-in-out;
+}
+
+.cart-panel.open {
+    right: 0;
+}
+
+.close-cart-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.close-cart-btn:hover {
+  color: white;
+}
+
+.cart-panel h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  border-bottom: 1px solid #34495e;
+  padding-bottom: 10px;
+}
+
+.cart-panel ul {
+  list-style-type: none;
+}
+
+.cart-panel #cart-items {
+  margin-bottom: 20px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #34495e;
+}
+
+.cart-item .item-info {
+  flex-grow: 1;
+}
+
+.item-info .item-name {
+    display: block;
+    font-weight: bold;
+}
+
+.item-info .item-price {
+    font-size: 0.9rem;
+    color: #bdc3c7;
+}
+
+.cart-item .remove-btn {
+    background-color: #8899b9;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background-color 0.3s ease;
+    width: auto;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.cart-item .remove-btn:hover {
+    background-color: #28333d;
+    color: white;
+}
+
+#cart-total {
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-align: right;
+    margin: 20px 0;
+}
+
+.cart-panel button {
+  background-color: #8899b9;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.cart-panel button:hover {
+    background-color: rgb(56, 55, 97);
+}
+.cart-panel .checkout-btn {
+    background-color: #27ae60;
+}
+.cart-panel .checkout-btn:hover {
+    background-color: #2ecc71;
+}
+
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  background-color: #2c3e50;
+  margin: 10% auto;
+  padding: 30px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 10px;
+  position: relative;
+  animation: fadeIn 0.3s;
+}
+
+.close-button {
+  color: #aaa;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: white;
+  text-decoration: none;
+}
+
+#modal-title {
+    margin-bottom: 20px;
+}
+#modal-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: none;
+}
+#modal-description {
+    line-height: 1.6;
+}
+
+/* inicio de sesiooon*/
+input[type=text],
+input[type=password],
+textarea,
+select {
+    width: 25%;
+    padding: 8px 12px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.read-more-button {
+    background-color: #2c3e50;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    display: block;
+    margin: 20px auto;
+    font-size: 0.9em;
+    width: 7%;
+    transition: background-color 0.3s;
+}
+
+.placeholder
+{
+  position:center
+}
+
+.logo {
+  max-width: 150px;
+  margin-bottom: 0px;
+}
+
+#home {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), #1d2a36), url('bannervuelo.jpg');
+    background-size: cover;
+    background-position: center;
+}
+.url {
+  min-height: 100vh;
+  padding: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+}
+
+/* Auth Styles */
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.auth-box {
+    background-color: #2c3e50;
+    padding: 40px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.auth-box h2 {
+    margin-bottom: 25px;
+}
+
+.auth-box .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.auth-box label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.auth-box input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #34495e;
+    background-color: #354250;
+    color: #ecf0f1;
+    font-size: 1rem;
+}
+
+.auth-box .btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.auth-switch {
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.auth-switch a {
+    color: #82eefd;
+    font-weight: bold;
+}
+  </style>
+</html>

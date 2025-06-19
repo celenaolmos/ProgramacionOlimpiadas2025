@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métodos de Pago - Tripify</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <a href="index.html"><img src="tripifycopia.png" alt="Tripify" class="logo"></a>
+            </div>
+            <a href="index.html" class="btn">Volver al Inicio</a>
+        </div>
+    </div>
+
+    <div class="profile-page-container">
+        <h2>Mis Métodos de Pago</h2>
+        <div id="saved-payment-methods">
+            <p>No tienes métodos de pago guardados.</p>
+        </div>
+        <form id="add-payment-method-form" class="profile-form">
+            <h3 class="form-section-title">Agregar nueva tarjeta</h3>
+            <div class="form-group">
+                <label for="card-type">Tipo de Tarjeta</label>
+                <select id="card-type" name="card-type" required>
+                    <option value="">Seleccione una opción...</option>
+                    <option value="Visa">Visa</option>
+                    <option value="Mastercard">MasterCard</option>
+                    <option value="Amex">American Express</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="card-number">Número de la Tarjeta</label>
+                <input type="text" id="card-number" pattern="\d{16}" title="Debe contener 16 dígitos" placeholder="**** **** **** ****" required>
+            </div>
+             <div class="form-group inline">
+                <div>
+                    <label for="expiry-date">Vencimiento (MM/AA)</label>
+                    <input type="text" id="expiry-date" placeholder="MM/AA" pattern="\d{2}/\d{2}" title="Formato MM/AA" required>
+                </div>
+                <div>
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" pattern="\d{3,4}" title="Debe contener 3 o 4 dígitos" required>
+                </div>
+            </div>
+            <button type="submit" class="btn">Agregar Tarjeta</button>
+        </form>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyA8SxD_5glSOZcIcDeIuQnhXaY5fBmkjW8",
+          authDomain: "tripify-f4a7d.firebaseapp.com",
+          databaseURL: "https://tripify-f4a7d-default-rtdb.firebaseio.com",
+          projectId: "tripify-f4a7d",
+          storageBucket: "tripify-f4a7d.appspot.com",
+          messagingSenderId: "476713525038",
+          appId: "1:476713525038:web:68139009c9e5f194b2a4bf"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (!loggedInUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const userRef = database.ref('usuarios/' + loggedInUser);
+            const savedMethodsContainer = document.getElementById('saved-payment-methods');
+            const addCardForm = document.getElementById('add-payment-method-form');
+
+            const renderPaymentMethods = (metodos) => {
+                savedMethodsContainer.innerHTML = '';
+                const paymentMethods = metodos || [];
+                if (paymentMethods.length > 0) {
+                    paymentMethods.forEach((card, index) => {
+                        if (!card) return; // Firebase can leave nulls in arrays after deletion
+                        const cardDiv = document.createElement('div');
+                        cardDiv.className = 'card';
+                        cardDiv.innerHTML = `
+                            <div class="card-details">
+                                <span class="card-type">${card.tipo}</span>
+                                <span class="card-number">**** **** **** ${card.numero.slice(-4)}</span>
+                            </div>
+                            <button class="delete-btn" data-index="${index}">Eliminar</button>
+                        `;
+                        savedMethodsContainer.appendChild(cardDiv);
+                    });
+
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const indexToDelete = e.target.dataset.index;
+                            userRef.child('metodosDePago').child(indexToDelete).remove();
+                        });
+                    });
+                } else {
+                    savedMethodsContainer.innerHTML = '<p>No tienes métodos de pago guardados.</p>';
+                }
+            };
+
+            userRef.child('metodosDePago').on('value', (snapshot) => {
+                renderPaymentMethods(snapshot.val());
+            });
+            
+            addCardForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const newCard = {
+                    tipo: document.getElementById('card-type').value,
+                    numero: document.getElementById('card-number').value,
+                    vencimiento: document.getElementById('expiry-date').value,
+                    cvv: document.getElementById('cvv').value, 
+                };
+
+                userRef.child('metodosDePago').push(newCard).then(() => {
+                    addCardForm.reset();
+                    alert('Tarjeta agregada con éxito.');
+                }).catch(error => {
+                    console.error("Error adding card:", error);
+                    alert("No se pudo agregar la tarjeta.");
+                });
+            });
+        });
+    </script>
+</body>
+</html>
